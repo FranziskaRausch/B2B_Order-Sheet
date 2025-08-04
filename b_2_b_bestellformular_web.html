@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B2B-Bestellformular</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 1000px; margin: auto; position: relative; }
+    header { display: flex; justify-content: space-between; align-items: center; }
+    header img { height: 80px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 2rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    input[type="number"] { width: 60px; }
+    input[readonly] { background-color: #f9f9f9; }
+    .total-row { font-weight: bold; background-color: #f0f0f0; }
+    .section-title { margin-top: 2rem; font-size: 1.2rem; font-weight: bold; }
+    .print-button { margin-top: 2rem; padding: 0.5rem 1rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>B2B-Bestellformular – Pâtisserie Johanna</h1>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" height="80">
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+        font-size="48" font-family="serif" fill="#222">
+    Pâtisserie Johanna
+  </text>
+</svg>
+  </header>
+
+  <div class="section-title">Kundendaten</div>
+  <label>Firma: <input type="text"></label><br>
+  <label>Name: <input type="text"></label><br>
+  <label>E-Mail: <input type="email"></label><br>
+  <label>Telefon: <input type="tel"></label><br>
+  <label>Rechnungsadresse: <input type="text" style="width: 400px;"></label><br>
+  <label>Lieferadresse: <input type="text" style="width: 400px;"></label><br>
+  <label>Lieferdatum: <input type="date"></label>
+
+  <div class="section-title">Bestellliste</div>
+  <table id="produktTabelle">
+    <thead>
+      <tr>
+        <th>✓</th>
+        <th>Kategorie</th>
+        <th>Produktname</th>
+        <th>Einheit</th>
+        <th>B2B (€)</th>
+        <th>Menge</th>
+        <th>Gesamt (€)</th>
+      </tr>
+    </thead>
+    <tbody id="produktBody"></tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="6">Gesamtsumme (€):</td>
+        <td><input type="text" id="gesamtSumme" readonly></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <button class="print-button" onclick="window.print()">Drucken / PDF erstellen</button>
+
+  <script>
+    const produkte = [
+      { kategorie: "Dragées", name: "Yuzu Pistazien 80g Glas", einheit: "Glas", preis: 10.43 },
+      { kategorie: "Dragées", name: "Zartbitter-Schokolade Espressobohne 80g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Dragées", name: "Zartbitter-Schokolade Maispops 70g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Dragées", name: "Zartbitterschokolade Kakaobohne Peru 100g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Dragées", name: "Piemonteser Haselnüsse rot funkelnd 100g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Granola", name: "Schoko Glas 170g", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Granola", name: "Beeren Glas 170g", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Granola", name: "Bircher Müsli Glas 170g", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Granola", name: "Schoko Beutel 500g", einheit: "Beutel", preis: 13.93 },
+      { kategorie: "Granola", name: "Beeren Beutel 500g", einheit: "Beutel", preis: 13.93 },
+      { kategorie: "Granola", name: "Bircher Müsli Beutel 500g", einheit: "Beutel", preis: 13.93 },
+      { kategorie: "Valée du chocolat", name: "Zartbitter-Schokolade Pfeffer Kirsch 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Valée du chocolat", name: "Yuzu-Schokolade Sesam Kornblume 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Valée du chocolat", name: "Passionsfrucht-Schokolade Drachenfrucht Soja 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Valée du chocolat", name: "Mandel-Schokolade Espressobohne Tonkabohne 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Valée du chocolat", name: "Karamell-Schokolade Pekanuss Apfel 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Valée du chocolat", name: "Himbeer-Schokolade Meersalz Piemonteser Haselnuss 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Valée du chocolat", name: "Erdbeer-Schokolade Pfeffer Pistazie 65g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Tartinaden", name: "Pistazie 100g Glas", einheit: "Glas", preis: 10.43 },
+      { kategorie: "Tartinaden", name: "Piemonteser Haselnuss 100g Glas", einheit: "Glas", preis: 7.63 },
+      { kategorie: "Tartinaden", name: "Pekanuss 100g Glas", einheit: "Glas", preis: 8.33 },
+      { kategorie: "Konfitüre", name: "Zitrusfalter Yuzu Bergamotte 200g Glas", einheit: "Glas", preis: 6.93 },
+      { kategorie: "Konfitüre", name: "Beerenfalter 200g Glas", einheit: "Glas", preis: 6.93 },
+      { kategorie: "Trinkschokolade", name: "Matcha Velvet 100g Glas", einheit: "Glas", preis: 6.93 },
+      { kategorie: "Trinkschokolade", name: "Zartbitter 100g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Trinkschokolade", name: "Vollmilch 100g Glas", einheit: "Glas", preis: 6.23 },
+      { kategorie: "Trinkschokolade", name: "Cacao Butterflys 135g Box", einheit: "Box", preis: 13.93 },
+      { kategorie: "Specials", name: "Baumkuchen Johanna Ring", einheit: "Stück", preis: 13.93 },
+      { kategorie: "Specials", name: "Baumkuchen Johanna Spitzen 175g", einheit: "Stück", preis: 13.93 }
+    ];
+
+    const body = document.getElementById("produktBody");
+
+    produkte.forEach((p, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="checkbox"></td>
+        <td>${p.kategorie}</td>
+        <td>${p.name}</td>
+        <td>${p.einheit}</td>
+        <td>${p.preis.toFixed(2)}</td>
+        <td><input type="number" min="0" value="" onchange="berechne(${i})" id="menge${i}"></td>
+        <td><input type="text" id="summe${i}" readonly></td>
+      `;
+      body.appendChild(row);
+    });
+
+    function berechne(index) {
+      const menge = parseFloat(document.getElementById(`menge${index}`).value) || 0;
+      const preis = produkte[index].preis;
+      const summe = menge * preis;
+      document.getElementById(`summe${index}`).value = summe.toFixed(2);
+      berechneGesamt();
+    }
+
+    function berechneGesamt() {
+      let gesamt = 0;
+      produkte.forEach((_, i) => {
+        const val = parseFloat(document.getElementById(`summe${i}`).value) || 0;
+        gesamt += val;
+      });
+      document.getElementById("gesamtSumme").value = gesamt.toFixed(2);
+    }
+  </script>
+
+</body>
+</html>
